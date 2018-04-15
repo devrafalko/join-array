@@ -74,8 +74,9 @@ module.exports = function (config){
       i = config.array.length-2;
       continue;
     }
-    if(eachDefined) config.array[i] = config.each(config.array[i],i,config.array);
-    message += config.array[i];
+    var item = config.array[i];
+    if(eachDefined) item = config.each(item,i,config.array);
+    message += item;
     if(i<config.array.length-2) message += config.separator;
     if(i===config.array.length-2) message += config.last;
   }
