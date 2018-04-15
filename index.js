@@ -12,10 +12,19 @@ module.exports = function (config){
   });
   /* Check if the first argument is [Object] */
   const hasObjectConfig = type(config,Object);
-  
+
+  /*The properties of the [Object] config can be omitted. Then the default valued are attached. */
+  const defaults = {
+    separator:', ',
+    last:' and ',
+    max:Infinity,
+    maxMessage:(missed)=>`(${missed} more...)`,
+    each:null
+  };
+
   if(!hasObjectConfig){
     /* The first argument is not [Object], so all arguments are validated. */
-    argumentsTypes(arguments,[Array,String,String,Number,[Function,String]],(o)=>{
+    argumentsTypes(arguments,[Array,[String,null,undefined],[String,null,undefined],[Number,null,undefined],[Function,String,null,undefined],[Function,null,undefined]],(o)=>{
       /* If any of the passed arguments does not match the expected type, throw an error. */
       throw new TypeError(`${moduleName}: ${o.message}`);
     });
@@ -24,7 +33,7 @@ module.exports = function (config){
      * It is to unify the passed arguments, regardless they are given as [Object] config object or as separate arguments.
      * Then the further code always take [Object] config object for the computations. */
     const argumentsToObject = {};
-    const properties = ['array','separator','last','max','maxMessage'];
+    const properties = ['array','separator','last','max','maxMessage','each'];
     for(var i in arguments){
       argumentsToObject[properties[i]] = arguments[i];
     }
@@ -36,33 +45,27 @@ module.exports = function (config){
      * If the first argument is [Object], the next arguments are ignored. */
     const expected = {
       array:Array,
-      separator:[String,undefined],
-      last:[String,undefined],
-      max:[Number,undefined],
-      maxMessage:[Function,String,undefined]
+      separator:[String,null,undefined],
+      last:[String,null,undefined],
+      max:[Number,null,undefined],
+      maxMessage:[Function,String,null,undefined],
+      each:[Function,null,undefined]
     };
     propertiesTypes(config,expected,(o)=>{
       /* If any of the properties does not match the expected type, throw an error. */
       throw new TypeError(`${moduleName}: Invalid [Object] config argument. ${o.message}`);
     });
+  }
 
-    /*The properties of the [Object] config can be omitted. Then the default valued are attached. */
-    var defaults = {
-      separator:', ',
-      last:' and ',
-      max:Infinity,
-      maxMessage:(missed)=>`(${missed} more...)`
-    };
-
-    for(var i in defaults){
-      if(type(config[i],undefined)) config[i] = defaults[i];
-    }
+  /* The not defined properties or arguments are replaced with default values. */
+  for(var i in defaults){
+    if(type(config[i],[null,undefined])) config[i] = defaults[i];
   }
 
   /* The arguments are valid.
-   * The [Object] config object is ready to be computed.
-   * The omitted arguments are replaced with the default ones.*/
+   * The [Object] config object is ready to be computed. */
   var message = "";
+  var eachDefined = type(config.each,Function);
   for(var i=0;i<config.array.length;i++){
     if(i===config.max-1 && config.array.length>config.max){
       /* Check the type of maxMessage, if [Function], call it and pass the missed items number. */
@@ -71,6 +74,7 @@ module.exports = function (config){
       i = config.array.length-2;
       continue;
     }
+    if(eachDefined) config.array[i] = config.each(config.array[i],i,config.array);
     message += config.array[i];
     if(i<config.array.length-2) message += config.separator;
     if(i===config.array.length-2) message += config.last;
