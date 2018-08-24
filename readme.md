@@ -9,7 +9,27 @@
 Any bugs found? Give me to know on [GitHub](https://github.com/devrafalko/join-array)
 
 # Installation
+
+### NodeJS
+
 `npm install join-array`
+
+### Browser
+Load the `join-array.min.js` file from the `dist` folder into your `.html` file.  
+The module is accessible as `joinArray` in the window scope.  
+It is a babel converted and webpack bundled [ES5] module version.
+
+```html
+<script src="join-array.min.js"></script>
+<script>
+  var list = joinArray({
+    array: ['Jasmine', 'Adam', 'Amanda', 'Nicky'],
+    separator: ', '
+  });
+</script> 
+```
+
+# Sample
 
 ```javascript
 const join = require('join-array');
@@ -62,7 +82,7 @@ const list = join(cars, " | ", " | ", 3, "[...]"); //BMW | Tesla | [...] | Citro
 * When `[Function]`, it expects the [String] value to be returned. The `missed` argument passed through this function equals the number of missed items and can be used in the returned [String] message.
 
 ##### `each` [Function|null] *(optional)*
-**Default:** `null` 
+**Default:** `null`  
 **Description:** If the `each` is defined, the module loops through each `array` item and calls the [Function] `each` with the following parameters: `each(item, iter, array)`. Use `each` function to modify the value. The **returned** value will be used in the chain.
 
 ```javascript
