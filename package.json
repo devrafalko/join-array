@@ -1,6 +1,6 @@
 {
   "name": "join-array",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Join the elements of an array into a string. Indicate the regular and the last one separator. Indicate the maximum number of items to concatenate.",
   "main": "index.js",
   "scripts": {
